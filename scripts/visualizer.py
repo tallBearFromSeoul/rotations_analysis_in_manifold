@@ -19,7 +19,6 @@ def visualize(Rs_interp: list, draw_3d: bool):
     idxs, thetas, ks_x, ks_y, ks_z = [*range(len(Rs_interp))], [], [], [], []
     ks_norm, ks_norm_x, ks_norm_y, ks_norm_z = [], [], [], []
     idxs_metrics = [*range(len(Rs_interp)-1)]
-    print(f'Rs_interp[0] :\n{Rs_interp[0]}')
     geodesic_metrics, hyperbolic_metrics, frobenius_metrics = compute_metrics(Rs_interp[0], Rs_interp)
     for R_interp in Rs_interp:
         k_inv, theta_inv, R_log = log_map_from_SO3_to_so3(R_interp)
@@ -83,10 +82,6 @@ def main():
     k_inv2, theta_inv2, R_log2 = log_map_from_SO3_to_so3(R2)
     Rs_interp = slerp(R1, R2, 30)
     Rs_interp[0] = R1
-    #print(f'Rs_interp :\n{Rs_interp}')
-    #print(f'k1 :\n{k_inv1}\nk2 :\n{k_inv2}')
-    #print(f'theta1 : {rad2deg(theta_inv1)}\t theta2 : {rad2deg(theta_inv2)}')
-    #print(f'R_log1 :\n{R_log1}\nR_log2 :\n{R_log2}')
 
     draw_3d = True
     visualize(Rs_interp, draw_3d)

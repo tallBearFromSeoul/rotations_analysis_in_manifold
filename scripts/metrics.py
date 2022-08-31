@@ -15,4 +15,16 @@ def hyperbolic_metric(R1: np.ndarray, R2: np.ndarray) -> float:
 def frobenius_metric(R1: np.ndarray, R2: np.ndarray):
     return np.linalg.norm(R1-R2)
 
+def compute_metrics(R1: np.ndarray, Rs_interp: list):
+    geodesic_metrics = []
+    hyperbolic_metrics = []
+    frobenius_metrics = []
+    for i, R_interp in enumerate(Rs_interp):
+        if i==0:
+            continue
+        geodesic_metrics.append(geodesic_metric(R1, R_interp))
+        hyperbolic_metrics.append(hyperbolic_metric(R1, R_interp))
+        frobenius_metrics.append(frobenius_metric(R1, R_interp))
+    return geodesic_metrics, hyperbolic_metrics, frobenius_metrics
+
 

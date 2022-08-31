@@ -1,11 +1,6 @@
 from exp_and_log_map import *
 from metrics import *
 
-def deg2rad(deg: float):
-    return deg*np.pi/180.0
-def rad2deg(rad: float):
-    return rad*180.0/np.pi
-
 # spherical linear interpolation (SLERP)
 # R1 and R2 are 3x3 rotation matrices,
 # where the function computes the geodesic line
@@ -27,27 +22,15 @@ def slerp(R1: np.ndarray, R2: np.ndarray, n_steps: int = 25):
         raise NotInt
     if n_steps < 0:
         raise NotPositive
-    #print(f'R1 :\n{R1}\nR2 :\n{R2}')
     Rs_interp = []
-    for lamda in np.linspace(0.0, 1.0, n_steps):
+    for i, lamda in enumerate(np.linspace(0.0, 1.0, n_steps)):
+        if i == 0:
+            continue
         R1_inv = np.linalg.inv(R1)
         k_log, theta_log, R_log = log_map_from_SO3_to_so3(R1_inv @ R2)
-        k, theta, R = exp_map_from_so3_to_SO3(lamda*k_log, lamda*theta_log)
+        k, theta, R = exp_map_from_so3_to_SO3(lamda*k_log)
         Rs_interp.append(R1 @ R)
-    #print(f'Rs_interp :\n{Rs_interp}')
     return Rs_interp
-
-def compute_metrics(R1: np.ndarray, Rs_interp: list):
-    geodesic_metrics = []
-    hyperbolic_metrics = []
-    frobenius_metrics = []
-    for i, R_interp in enumerate(Rs_interp):
-        if i==0:
-            continue
-        geodesic_metrics.append(geodesic_metric(R1, R_interp))
-        hyperbolic_metrics.append(hyperbolic_metric(R1, R_interp))
-        frobenius_metrics.append(frobenius_metric(R1, R_interp))
-    return geodesic_metrics, hyperbolic_metrics, frobenius_metrics
 
 # euler_angles in rad : [roll, pitch, yaw]
 def R_from_euler_angles_rad(euler_angles_rad: np.ndarray):
@@ -66,7 +49,6 @@ def R_from_euler_angles_rad(euler_angles_rad: np.ndarray):
     return R_z @ R_y @ R_x
 
 def main():
-    #R1 = np.eye(3)
     euler_angles_deg1 = np.array([0,0,45])
     euler_angles_deg2 = np.array([45,45,45])
     R1 = R_from_euler_angles_rad(deg2rad(euler_angles_deg1))
@@ -76,7 +58,6 @@ def main():
     print(f'k1 :\n{k_inv1}\nk2 :\n{k_inv2}')
     print(f'theta1 : {rad2deg(theta_inv1)}\t theta2 : {rad2deg(theta_inv2)}')
     print(f'R_log1 :\n{R_log1}\nR_log2 :\n{R_log2}')
-    #k, theta, R2 = R_from_so3_SO3(w, w_des)
     slerp(R1, R2, 3)
 
 if __name__=='__main__':
