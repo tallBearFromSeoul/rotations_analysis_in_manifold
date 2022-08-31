@@ -109,17 +109,15 @@ def R_from_so3_to_SO3(w: np.ndarray, w_des: np.ndarray) -> np.ndarray:
     R = np.eye(3) + np.sin(theta) * K + (1 - np.cos(theta)) * K@K
     return k, theta, R
 
-def exp_map_from_so3_to_SO3(k: np.ndarray, theta: float):
+def exp_map_from_so3_to_SO3(k: np.ndarray, blank):
     if not isinstance(k, np.ndarray):
         raise NotNumpyArray
-    if not isinstance(theta, float):
-        raise NotFloat
     if k.ndim != 1:
         raise NotOneDimArray
     if k.shape[0] != 3:
         raise Not3Vector
-    if theta < 0 or theta > 2*np.pi:
-        theta = theta % (2*np.pi)
+    #if theta < 0 or theta > 2*np.pi:
+    #    theta = theta % (2*np.pi)
     K = skew_symmetric(k)
     # R = I_3 + sin(theta)*K + (1-cos(theta))*K^2
     # where the skew_symmetric and symmetric decomposition of R is :
@@ -127,7 +125,8 @@ def exp_map_from_so3_to_SO3(k: np.ndarray, theta: float):
     # any square matrix can be written uniquely as a skew-symmetric matrix
     # sin(theta)*K  : (R-R.T)/2 -> skew_symmetric
     # I_3 + (1-cos(theta))*K^2 : (R+R.T)/2 -> symmetric
-    R = np.eye(3) + np.sin(theta) * K + (1 - np.cos(theta)) * K@K
+    theta = np.linalg.norm(k)
+    R = np.eye(3) + np.sin(theta)/theta * K + (1 - np.cos(theta))/(theta**2) * K@K
     return k, theta, R
 
 def log_map_from_SO3_to_so3(R: np.ndarray) -> np.ndarray:
@@ -143,7 +142,7 @@ def log_map_from_SO3_to_so3(R: np.ndarray) -> np.ndarray:
     # angle of rotation theta (rad)
     theta = np.arccos((trace(R) - 1) / 2)
     #print('theta :\n',theta)
-    R_log = (1 / (2*np.sin(theta))) * (R - R.T)
+    R_log = (theta / (2*np.sin(theta))) * (R - R.T)
     # axis of rotation vector k
     k = vee_operator(R_log)
     return k, theta, R_log

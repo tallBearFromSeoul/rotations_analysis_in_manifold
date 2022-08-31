@@ -32,7 +32,7 @@ def slerp(R1: np.ndarray, R2: np.ndarray, n_steps: int = 25):
     for lamda in np.linspace(0.0, 1.0, n_steps):
         R1_inv = np.linalg.inv(R1)
         k_log, theta_log, R_log = log_map_from_SO3_to_so3(R1_inv @ R2)
-        k, theta, R = exp_map_from_so3_to_SO3(k_log, lamda*theta_log)
+        k, theta, R = exp_map_from_so3_to_SO3(lamda*k_log, lamda*theta_log)
         Rs_interp.append(R1 @ R)
     #print(f'Rs_interp :\n{Rs_interp}')
     return Rs_interp
@@ -47,7 +47,6 @@ def compute_metrics(R1: np.ndarray, Rs_interp: list):
         geodesic_metrics.append(geodesic_metric(R1, R_interp))
         hyperbolic_metrics.append(hyperbolic_metric(R1, R_interp))
         frobenius_metrics.append(frobenius_metric(R1, R_interp))
-    print(geodesic_metrics)
     return geodesic_metrics, hyperbolic_metrics, frobenius_metrics
 
 # euler_angles in rad : [roll, pitch, yaw]
