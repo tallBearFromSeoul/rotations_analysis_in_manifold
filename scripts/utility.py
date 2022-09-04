@@ -40,4 +40,96 @@ def skew_symmetric(v: np.ndarray) -> np.ndarray:
         raise NotOneDimArray
     return np.array([[0,-v[2],v[1]],[v[2],0,-v[0]],[-v[1],v[0],0]])
 
+def quaternion_mult(q1: np.ndarray, q2: np.ndarray):
+    if not isinstance(q1, np.ndarray) or not isinstance(q2, np.ndarray):
+        raise NotNumpyArray
+    if q1.ndim != 1 or q2.ndim != 1:
+        raise NotOneDimArray
+    if q1.shape[0] != 4 or q2.shape[0] != 4:
+        raise Not4Vector
+    q1r = q1[0]
+    q1v = q1[1:]
+    q2r = q2[0]
+    q2v = q2[1:]
+    qr = np.array([q1r*q2r - q1v.dot(q2v)])
+    qv = q1r*q2v + q2r*q1v + cross_product(q1v, q2v)
+    return np.hstack((qr, qv))
+
+def quaternion_inverse(q: np.ndarray):
+    if not isinstance(q, np.ndarray):
+        raise NotNumpyArray
+    if q.ndim != 1: 
+        raise NotOneDimArray
+    if q.shape[0] != 4:
+        raise Not4Vector
+    qr = q[0]
+    qv = q[1:]
+    q_norm = q.dot(q)
+    q_inv = np.hstack((qr, -qv))/q_norm
+    return q_inv
+
+# q = [a, b, c, d].T = [qr, qv].T
+# qr = a, qv = [b, c, d].T
+# q = [cos(theta), w*sin(theta)].T
+# where,
+# theta = arccos(qr)
+# w = qv / norm(qv)
+# then,
+# q^n = [cos(n*theta), w*sin(n*theta)].T
+def quaternion_power(q: np.ndarray, n: float):
+    if not isinstance(q, np.ndarray):
+        raise NotNumpyArray
+    if q.ndim != 1: 
+        raise NotOneDimArray
+    if q.shape[0] != 4:
+        raise Not4Vector
+    if not isinstance(n, float):
+        raise NotFloat
+    qr = q[0]
+    qv = q[1:]
+    qv_norm = np.linalg.norm(qv)
+    theta = np.arccos(qr)
+    w = qv/qv_norm
+    return np.hstack((np.cos(n*theta), w*np.sin(n*theta)))
+
+# euler_angles in rad : [roll, pitch, yaw]
+def R_from_euler_angles_rad(euler_angles_rad: np.ndarray):
+    if not isinstance(euler_angles_rad, np.ndarray):
+        raise NotNumpyArray
+    if euler_angles_rad.ndim != 1:
+        raise NotOneDimArray
+    if euler_angles_rad.shape[0] != 3:
+        raise Not3Vector
+    roll = euler_angles_rad[0]
+    pitch = euler_angles_rad[1]
+    yaw = euler_angles_rad[2]
+    R_x = np.array([[1,0,0],[0,np.cos(roll),-np.sin(roll)],[0,np.sin(roll),np.cos(roll)]])
+    R_y = np.array([[np.cos(pitch),0,np.sin(pitch)],[0,1,0],[-np.sin(pitch),0,np.cos(pitch)]])
+    R_z = np.array([[np.cos(yaw), -np.sin(yaw), 0],[np.sin(yaw),np.cos(yaw),0],[0,0,1]])
+    return R_z @ R_y @ R_x
+
+# euler_angles in rad : [roll, pitch, yaw]
+def q_from_euler_angles_rad(euler_angles_rad: np.ndarray):
+    if not isinstance(euler_angles_rad, np.ndarray):
+        raise NotNumpyArray
+    if euler_angles_rad.ndim != 1:
+        raise NotOneDimArray
+    if euler_angles_rad.shape[0] != 3:
+        raise Not3Vector
+    roll_2 = euler_angles_rad[0]/2
+    pitch_2 = euler_angles_rad[1]/2
+    yaw_2 = euler_angles_rad[2]/2
+    c_x = np.cos(roll_2)
+    c_y = np.cos(pitch_2)
+    c_z = np.cos(yaw_2)
+    s_x = np.sin(roll_2)
+    s_y = np.sin(pitch_2)
+    s_z = np.sin(yaw_2)
+    q = np.array(
+        [c_x*c_y*c_z + s_x*s_y*s_z,
+        s_x*c_y*c_z - c_x*s_y*s_z,
+        c_x*s_y*c_z + s_x*c_y*s_z,
+        c_x*c_y*s_z - s_x*s_y*c_z])
+    return q
+
 

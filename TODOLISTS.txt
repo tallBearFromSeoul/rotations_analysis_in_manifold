@@ -1,0 +1,12 @@
+
+
+### Sun Sep 4 12:37AM
+I realized that the PROs and CONs of each representation of 3D rotation (euler angles, rotation matrix, quaternion, axis-angle representation)
+I think there is a need to point out why using rotation matrix for slerp is bad (gimbal lock)
+Thus, I will add analysis between rotation matrix and quaternion in cases where gimbal lock occurs. slerp in axis angle only seems to be interesting as well.
+
+Also, I will add conversion functions between each representation for later to better visualize things. (Like indicating the euler angles on the unit sphere, drawing the path, etc)
+# This link seems to be informative, please refer to it later "https://www.mathworks.com/help/driving/ref/quaternion.slerp.html"
+
+
+Also, I have to finish reading the pdf "IK.pdf" (IK : Inverse Kinematics) such that I can later get to "filtering" and "kinematic chains part."
