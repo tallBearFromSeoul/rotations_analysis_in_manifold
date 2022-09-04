@@ -1,14 +1,17 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from error import *
 from utility import *
 
+### Rodrigues formula :
 # R = I_3 + sin(theta)*K + (1-cos(theta))*K^2
 # where the skew_symmetric and symmetric decomposition of R is :
 # R = (R - R.T)/2 + (R + R.T)/2
 # any square matrix can be written uniquely as a skew-symmetric matrix
 # sin(theta)*K  : (R-R.T)/2 -> skew_symmetric
 # I_3 + (1-cos(theta))*K^2 : (R+R.T)/2 -> symmetric
+
+# axis-angle representation k
+# to rotation matrix R
 def exp_map_from_so3_to_SO3(k: np.ndarray):
     if not isinstance(k, np.ndarray):
         raise NotNumpyArray
@@ -21,8 +24,10 @@ def exp_map_from_so3_to_SO3(k: np.ndarray):
     if theta == 0:
         raise ZeroDivisionError
     R = np.eye(3) + (np.sin(theta)/theta) * K + (1 - np.cos(theta))/(theta**2) * K@K
-    return k, theta, R
+    return R
 
+# rotation matrix R
+# to axis-angle representation k
 def log_map_from_SO3_to_so3(R: np.ndarray):
     if not isinstance(R, np.ndarray):
         raise NotNumpyArray
@@ -39,8 +44,10 @@ def log_map_from_SO3_to_so3(R: np.ndarray):
     R_log = (theta / (2*np.sin(theta))) * (R - R.T)
     # axis of rotation vector k
     k = vee_operator(R_log)
-    return k, theta, R_log
+    return k
 
+# axis-angle representation k
+# to quaternion q : [qr, qv].T
 def exp_map_from_so3_to_SU2(k: np.ndarray):
     if not isinstance(k, np.ndarray): 
         raise NotNumpyArray
@@ -58,6 +65,8 @@ def exp_map_from_so3_to_SU2(k: np.ndarray):
     else:
         return np.array([np.cos(theta_2), s_2*k[0]/theta, s_2*k[1]/theta, s_2*k[2]/theta])
 
+# quaternion q : [qr, qv].T
+# to axis-angle representation k
 def log_map_from_SU2_to_so3(q: np.ndarray):
     if not isinstance(q, np.ndarray):
         raise NotNumpyArray
@@ -71,12 +80,4 @@ def log_map_from_SU2_to_so3(q: np.ndarray):
         raise ZeroDivisionError
     k = 2*np.arccos(qr)*qv/np.linalg.norm(qv)
     return k
-
-def main():
-    euler_angles_deg1 = np.array([0,0,45])
-    q1 = q_from_euler_angles_rad(deg2rad(euler_angles_deg1))
-    log_map_from_SU2_to_so3(q1)
-
-if __name__=='__main__':
-    main()
 

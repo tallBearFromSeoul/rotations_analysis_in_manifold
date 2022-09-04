@@ -10,3 +10,5 @@ Also, I will add conversion functions between each representation for later to b
 
 
 Also, I have to finish reading the pdf "IK.pdf" (IK : Inverse Kinematics) such that I can later get to "filtering" and "kinematic chains part."
+
+

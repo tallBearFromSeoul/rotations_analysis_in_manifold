@@ -1,4 +1,80 @@
 
+def visualize_qs(qs_interp: list, draw_3d: bool):
+    f, ax = plt.subplots(1,4, figsize=(20,6))
+    f.suptitle(f'Spherical Linear Interpolation from q1 to q2 into {len(qs_interp)} points in Axis-Angle Representation')
+    idxs = [*range(len(qs_interp))]
+    #ks_norm1, ks_norm2, ks_x1, ks_y1, ks_z1, ks_x2,ks_y2, ks_z2 = [], [], [], [], [], [], [], [] 
+    thetas, ks_x, ks_y, ks_z = [], [], [], []
+    ks_norm, ks_norm_x, ks_norm_y, ks_norm_z = [], [], [], []
+    #thetas_1, thetas_2 = [], []
+    #qs_r1, qs_x1, qs_y1, qs_z1 = [], [], [], []
+    #qs_r2, qs_x2, qs_y2, qs_z2 = [], [], [], []
+    #for q1, q2 in zip(qs_interp, qs_interp_alter):
+    for q_interp in qs_interp:
+        k = log_map_from_SU2_to_so3(q_interp)
+        k_norm = np.linalg.norm(k)
+        thetas.append(rad2deg(k_norm))
+        ks_x.append(k[0])
+        ks_y.append(k[1])
+        ks_z.append(k[2])
+        ks_norm.append(k_norm)
+        ks_norm_x.append(k[0]/k_norm)
+        ks_norm_y.append(k[1]/k_norm)
+        ks_norm_z.append(k[2]/k_norm)
+        '''
+        k1 = log_map_from_SU2_to_so3(q1)
+        k2 = log_map_from_SU2_to_so3(q2)
+        k1_norm = np.linalg.norm(k1)
+        k2_norm = np.linalg.norm(k2)
+        ks_norm1.append(k1_norm)
+        ks_norm2.append(k2_norm)
+        ks_x1.append(k1[0])
+        ks_y1.append(k1[1])
+        ks_z1.append(k1[2])
+        ks_x2.append(k2[0])
+        ks_y2.append(k2[1])
+        ks_z2.append(k2[2])
+        thetas_1.append(rad2deg(np.linalg.norm(k1)))
+        thetas_2.append(rad2deg(np.linalg.norm(k2)))
+        qs_r1.append(q1[0])
+        qs_x1.append(q1[1])
+        qs_y1.append(q1[2])
+        qs_z1.append(q1[3])
+        qs_r2.append(q2[0])
+        qs_x2.append(q2[1])
+        qs_y2.append(q2[2])
+        qs_z2.append(q2[3])
+        '''
+    ax[0].scatter(idxs, thetas, alpha=0.5, s=8, marker='o', c='r')
+    #ax[0].scatter(idxs, thetas_2, alpha=0.5, s=8, marker='+', c='r')
+    #ax[0].legend(('q1', 'q0'))
+    ax[0].set_title('axis angle in degrees of quaternion')
+   
+    ax[1].scatter(idxs, ks_norm, alpha=0.5, s=8, marker='o', c='orange')
+    ax[1].scatter(idxs, ks_x, alpha=0.5, s=8, marker='o', c='r')
+    ax[1].scatter(idxs, ks_y, alpha=0.5, s=8, marker='o', c='g')
+    ax[1].scatter(idxs, ks_z, alpha=0.5, s=8, marker='o', c='b')
+    '''
+    ax[1].scatter(idxs, ks_norm2, alpha=0.5, s=8, marker='+', c='orange')
+    ax[1].scatter(idxs, ks_x2, alpha=0.5, s=8, marker='+', c='r')
+    ax[1].scatter(idxs, ks_y2, alpha=0.5, s=8, marker='+', c='g')
+    ax[1].scatter(idxs, ks_z2, alpha=0.5, s=8, marker='+', c='b')
+    '''
+    ax[1].legend(('Frobenius norm of axis vector of quaternion\n equals to angle in radians', 'component in x axis', 'component in y axis', 'component in z axis'), fontsize=10)
+    ax[1].set_title('axis vector of quaternion') 
+    '''
+    ax[2].scatter(idxs, qs_r1, alpha=0.5, s=8, marker='o', c='r')
+    ax[2].scatter(idxs, qs_r2, alpha=0.5, s=8, marker='+', c='b')
+    ax[2].scatter(idxs, qs_x1, alpha=0.5, s=8, marker='o', c='r')
+    ax[2].scatter(idxs, qs_y1, alpha=0.5, s=8, marker='o', c='g')
+    ax[2].scatter(idxs, qs_z1, alpha=0.5, s=8, marker='o', c='b')
+    ax[2].scatter(idxs, qs_x2, alpha=0.5, s=8, marker='+', c='r')
+    ax[2].scatter(idxs, qs_y2, alpha=0.5, s=8, marker='+', c='g')
+    ax[2].scatter(idxs, qs_z2, alpha=0.5, s=8, marker='+', c='b')
+    ax[2].legend(('q1_r','q2_r','q1_x','q1_y','q1_z','q2_x','q2_y','q2_z'))
+    ax[2].set_title('quaternion components')
+    '''
+
 def rodrigues_k_vec(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     if not isinstance(a, np.ndarray) or not isinstance(b, np.ndarray):
         raise NotNumpyArray

@@ -23,11 +23,11 @@ def slerp_R(R1: np.ndarray, R2: np.ndarray, n_steps: int = 25):
     if n_steps < 0:
         raise NotPositive
     Rs_interp = []
-    k_log, theta_log, R_log = log_map_from_SO3_to_so3(np.linalg.inv(R1) @ R2)
+    k_log = log_map_from_SO3_to_so3(np.linalg.inv(R1) @ R2)
     for i, lamda in enumerate(np.linspace(0.0, 1.0, n_steps)):
         if i==0:
             continue
-        k, theta, R = exp_map_from_so3_to_SO3(lamda*k_log)
+        R = exp_map_from_so3_to_SO3(lamda*k_log)
         Rs_interp.append(R1 @ R)
     return Rs_interp
 
@@ -43,11 +43,11 @@ def slerp_q_direct(q1: np.ndarray, q2: np.ndarray, n_steps: int = 25):
     if n_steps < 0:
         raise NotPositive
     qs_interp = []
+    q1_inv = quaternion_inverse(q1)
+    q1_inv_q2 = quaternion_mult(q1_inv, q2)
     for i, lamda in enumerate(np.linspace(0.0, 1.0, n_steps)):
         if i==0:
             continue
-        q1_inv = quaternion_inverse(q1)
-        q1_inv_q2 = quaternion_mult(q1_inv, q2)
         q1_inv_q2_pow = quaternion_power(q1_inv_q2, lamda)
         q = quaternion_mult(q1, q1_inv_q2_pow)
         qs_interp.append(q)
@@ -65,12 +65,12 @@ def slerp_q_exp_and_log(q1: np.ndarray, q2: np.ndarray, n_steps: int = 25):
     if n_steps < 0:
         raise NotPositive
     qs_interp = []
+    q1_inv = quaternion_inverse(q1)
+    q1_inv_q2 = quaternion_mult(q1_inv, q2)
+    k_log = log_map_from_SU2_to_so3(q1_inv_q2)
     for i, lamda in enumerate(np.linspace(0.0, 1.0, n_steps)):
         if i==0:
             continue
-        q1_inv = quaternion_inverse(q1)
-        q1_inv_q2 = quaternion_mult(q1_inv, q2)
-        k_log = log_map_from_SU2_to_so3(q1_inv_q2)
         q_exp = exp_map_from_so3_to_SU2(lamda*k_log)
         q = quaternion_mult(q1, q_exp)
         qs_interp.append(q)
