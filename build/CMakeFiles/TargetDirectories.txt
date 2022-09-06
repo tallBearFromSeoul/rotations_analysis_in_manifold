@@ -1,3 +1,0 @@
-/Users/gunny7828/Desktop/lie_algebra/build/CMakeFiles/run.exe.dir
-/Users/gunny7828/Desktop/lie_algebra/build/CMakeFiles/edit_cache.dir
-/Users/gunny7828/Desktop/lie_algebra/build/CMakeFiles/rebuild_cache.dir
