@@ -28,7 +28,8 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
     ### MPL Formatting
     mpl.rcParams['text.usetex'] = True
     mpl.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
-    mpl.rcParams['legend.fontsize'] = 12
+    mpl.rcParams['legend.fontsize'] = 10
+    mpl.rcParams['axes.titlepad'] = -10
     #mpl.rcParams['lines.linewidth'] = 1
     #mpl.rcParams['lines.linestyle'] = 'dashdot'
     
@@ -39,9 +40,10 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
     q1 = init_conditions[4]
     q2 = init_conditions[5]
     v_init = init_conditions[6]
-    path_title = r'path of vector $v_{init} =  [%.3f, %.3f, %.3f]^T$'%(v_init[0], v_init[1], v_init[2])+'\nfrom series of rotations on unit sphere using rotation matrices and quaternions'
+    path_title = r'path of vector $v_{init} =  [%.3f, %.3f, %.3f]^T$'%(v_init[0], v_init[1], v_init[2])+'\nfrom series of rotations on unit sphere\nusing rotation matrices and quaternions'
+    axis_ang_title = 'axis angle vector of the rotations\nfrom slerp using rotations matrices and quaternions'
 
-    f, axs = plt.subplots(2,4,figsize=(20,12))
+    f, axs = plt.subplots(2,4,figsize=(20,9))
     plt.subplots_adjust(left=0.03,bottom=0.15,right=0.97,top=0.7,wspace=0.5,hspace=0.4)
     suptitle = f'Comparison of Spherical Linear Interpolation from A to B between using rotation matrices and quaternions to {len(Rs_interp)} points in euler angles and axis-angle representation, '+'where\n' 
     suptitle += r'$A : euler\ angles_{deg} = [%.1f, %.1f, %.1f]^T$'%(euler_angles_deg1[0], euler_angles_deg1[1], euler_angles_deg1[2])+'\n'
@@ -189,11 +191,11 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
     if draw_3d:
         sphere_x, sphere_y, sphere_z = draw_sphere(100)
         #f3d, ax3ds = plt.subplots(1,2,figsize=(20,12))
-        f3d = plt.figure(figsize=(10,10))
+        f3d = plt.figure(figsize=(20,9))
         f3d.suptitle(suptitle)
         ax3d_0 = f3d.add_subplot(1, 2, 1, projection='3d')
         ax3d_1 = f3d.add_subplot(1, 2, 2, projection='3d')
-        plt.subplots_adjust()
+        plt.subplots_adjust(left=0.03,bottom=0.02,right=0.97,top=0.76,wspace=0.1,hspace=0.4)
        
         ax3d_0.scatter3D(R_paths_x, R_paths_y, R_paths_z, marker='o', s=30, c='r', alpha=0.8)
         ax3d_0.scatter3D(q_paths_x, q_paths_y, q_paths_z, marker='^', s=20, c='g', alpha=0.8)
@@ -210,13 +212,13 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
         ax3d_1.scatter3D(sphere_x, sphere_y, sphere_z, marker='.', s=3, c='c', alpha=0.3)
         #ax3d_1.legend(('R_ks', 'normalized R_ks', 'q_ks', 'normalized q_ks', 'unit sphere'))
         ax3d_1.legend(('R_ks', 'q_ks', 'unit sphere'))
+        ax3d_1.set_title(axis_ang_title)
         for (k_x, k_y, k_z, k_norm) in zip(R_ks_x, R_ks_y, R_ks_z, R_ks_norm):
             ax3d_1.plot3D([0,k_x],[0,k_y],[0,k_z], c='r', linewidth=1, alpha=0.5)
             #ax3d_1.plot3D([0,k_x/k_norm],[0,k_y/k_norm],[0,k_z/k_norm], c='g', linewidth=1, alpha=0.5)
         for (k_x, k_y, k_z, k_norm) in zip(q_ks_x, q_ks_y, q_ks_z, q_ks_norm):
             ax3d_1.plot3D([0,k_x],[0,k_y],[0,k_z], c='m', linewidth=1, alpha=0.5)
             #ax3d_1.plot3D([0,k_x/k_norm],[0,k_y/k_norm],[0,k_z/k_norm], c='lime', linewidth=1, alpha=0.5)
-            
         plt.savefig(f'R_q_slerp_comparison_3d_{fig_idx}.png')
 
 def compute_and_visualize(euler_angles_deg1: np.ndarray, euler_angles_deg2: np.ndarray, n_interp: int, v_init: np.ndarray, draw_3d: bool, fig_idx: int):
