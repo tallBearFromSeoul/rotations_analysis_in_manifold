@@ -70,6 +70,7 @@ def euler_angles_rad_from_q(q: np.ndarray):
     yaw = np.arctan2(2*(q[0]*q[3] + q[1]*q[2]), 1-2*(q[2]**2 + q[3]**2))
     return np.array([roll, pitch, yaw])    
 
+#http://www.songho.ca/opengl/gl_quaternion.html
 def R_from_q(q: np.ndarray):
     if not isinstance(q, np.ndarray):
         raise notnumpyarray

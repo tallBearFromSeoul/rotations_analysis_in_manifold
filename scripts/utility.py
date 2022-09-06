@@ -33,6 +33,10 @@ def vee_operator(A: np.ndarray) -> np.ndarray:
         raise NonSymmetricMatrix
     return np.array([-A[1,2], A[0,2], -A[0,1]])
 
+def hat_operator(v: np.ndarray) -> np.ndarray:
+    return skew_symmetric(v)
+
+# also known as hat operator
 def skew_symmetric(v: np.ndarray) -> np.ndarray:
     if not isinstance(v, np.ndarray):
         raise NotNumpyArray
