@@ -60,13 +60,25 @@ def q_from_euler_angles_rad(euler_angles_rad: np.ndarray):
 # to euler_angles in rad : [roll, pitch, yaw].T
 def euler_angles_rad_from_q(q: np.ndarray):
     if not isinstance(q, np.ndarray):
-        raise NotNumpyArray
+        raise notnumpyarray
     if q.ndim != 1: 
-        raise NotOneDimArray
+        raise notonedimarray
     if q.shape[0] != 4:
-        raise Not4Vector
+        raise not4vector
     roll = np.arctan2(2*(q[0]*q[1] + q[2]*q[3]), 1-2*(q[1]**2 + q[2]**2))
     pitch = np.arcsin(2*(q[0]*q[2] - q[3]*q[1]))
     yaw = np.arctan2(2*(q[0]*q[3] + q[1]*q[2]), 1-2*(q[2]**2 + q[3]**2))
     return np.array([roll, pitch, yaw])    
+
+def R_from_q(q: np.ndarray):
+    if not isinstance(q, np.ndarray):
+        raise notnumpyarray
+    if q.ndim != 1: 
+        raise notonedimarray
+    if q.shape[0] != 4:
+        raise not4vector
+    return np.array([
+        [1-2*(q[2]**2)-2*(q[3]**2), 2*q[1]*q[2]-2*q[0]*q[3], 2*q[1]*q[3] + 2*q[0]*q[2]],
+        [2*q[1]*q[2]+2*q[0]*q[3], 1-2*(q[1]**2)-2*(q[3]**2), 2*q[2]*q[3]-2*q[0]*q[1]],
+        [2*q[1]*q[3]-2*q[0]*q[2], 2*q[2]*q[3]+2*q[0]*q[1], 1-2*(q[1]**2)-2*(q[2]**2)]])
 
