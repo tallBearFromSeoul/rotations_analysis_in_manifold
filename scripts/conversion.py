@@ -1,4 +1,5 @@
 import numpy as np
+from utility import *
 
 # euler_angles in rad : [roll, pitch, yaw].T
 # to rotation matrix R 
@@ -82,4 +83,17 @@ def R_from_q(q: np.ndarray):
         [1-2*(q[2]**2)-2*(q[3]**2), 2*q[1]*q[2]-2*q[0]*q[3], 2*q[1]*q[3] + 2*q[0]*q[2]],
         [2*q[1]*q[2]+2*q[0]*q[3], 1-2*(q[1]**2)-2*(q[3]**2), 2*q[2]*q[3]-2*q[0]*q[1]],
         [2*q[1]*q[3]-2*q[0]*q[2], 2*q[2]*q[3]+2*q[0]*q[1], 1-2*(q[1]**2)-2*(q[2]**2)]])
+
+def main():
+    e_deg = np.array([125,100,40])
+    #e_deg = np.array([80,20,10])
+    e_rad = deg2rad(e_deg)
+    q = q_from_euler_angles_rad(e_rad)
+    e_test = euler_angles_rad_from_q(q)
+    print('e_rad',e_rad)
+    print('q',q)
+    print('e_test',e_test)
+
+if __name__=='__main__':
+    main()
 

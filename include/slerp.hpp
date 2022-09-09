@@ -27,4 +27,17 @@ void slerp_R(const Mat3f &__R1, const Mat3f &__R2, int __n_steps, std::vector<Ma
 	}
 }
 
+void slerp_q_direct(const Quat &__q1, const Quat &__q2, int __n_steps, std::vector<Quat> &Qs_interp__) {
+	if (Qs_interp__.size())
+		Qs_interp__.clear();
+	Quat q1_inv_q2 = __q1.inverse()*__q2;
+	for (int i=1; i<__n_steps; i++) {
+		float lambda = 1.0f * static_cast<float>(i) / static_cast<float>(__n_steps-1);
+		Quat q_p;
+		quaternion_power(q1_inv_q2, lambda, q_p);
+		Qs_interp__.push_back(__q1*q_p);
+	}
+
+}
+
 #endif

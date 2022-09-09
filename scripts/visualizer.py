@@ -154,7 +154,7 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
     ax_b_0.plot(idxs_paths, R_paths_x, c='r', alpha=0.5)
     ax_b_0.plot(idxs_paths, R_paths_y, c='b', alpha=0.5)
     ax_b_0.plot(idxs_paths, R_paths_z, c='g', alpha=0.5)
-    ax_b_0.legend(('R_path_x','R_path_y','R_path_z','q_path_x','q_path_y','q_path_z'))
+    ax_b_0.legend(('R_path_x','R_path_y','R_path_z'))
     ax_b_0.set_title(path_title)#r'path of vector $v_{init} =  [1,0,0]^T$ from series of rotations on unit sphere using rotation matrices')
     
     ax_b_1 = f.add_subplot(gs[1, 2:])

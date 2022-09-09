@@ -3,8 +3,6 @@
 #include "utility.hpp"
 #include <Eigen/Dense>
 
-typedef Eigen::Vector4f Quat;
-
 // R = I_3 + sin(theta)*K + (1-cos(theta))*K^2
 // where the skew_symmetric and symmetric decomposition of R is :
 // R = (R - R.T)/2 + (R + R.T)/2
@@ -37,17 +35,15 @@ void exp_map_from_so3_to_SU2(const Vec3f &__k, Quat &q__) {
 	if (theta == 0)
 		throw std::invalid_argument("ZeroDivisionError");
 	if (__k.sum() == 0) {
-		q__ << 1, 0, 0, 0;
+		q__ = Quat(1,0,0,0);
 	} else {
-		q__ << cos(theta_2), s_2*__k(0)/theta, s_2*__k(1)/theta, s_2*__k(2)/theta;
+		q__ = Quat(cos(theta_2), s_2*__k(0)/theta, s_2*__k(1)/theta, s_2*__k(2)/theta);
 	}
 }
 
 void log_map_from_SU2_to_so3(const Quat &__q, Vec3f &k__) {
-	float qr = __q(0);
-	std::cout<<"q :\n"<<__q<<"\n";
-	Vec3f qv = __q.block(1,0,3,1);
-	std::cout<<"qv :\n"<<qv<<"\n";
+	float qr = __q.w();
+	Vec3f qv = __q.vec();
 	if (qv.sum() == 0)
 		throw std::invalid_argument("ZeroDivisionError");
 	k__ = 2*acos(qr)*qv/qv.norm();
