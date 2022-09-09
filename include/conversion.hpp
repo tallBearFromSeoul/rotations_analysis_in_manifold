@@ -59,5 +59,4 @@ void q_from_euler_angles_rad(const Vec3f &__euler_angles_rad, Quat &q__) {
 	q__ = Quat(c_x*c_y*c_z + s_x*s_y*s_z, s_x*c_y*c_z - c_x*s_y*s_z, c_x*s_y*c_z + s_x*c_y*s_z,  c_x*c_y*s_z - s_x*s_y*c_z);
 }
 
-
 #endif

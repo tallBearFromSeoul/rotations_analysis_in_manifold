@@ -43,7 +43,7 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
     path_title = r'path of vector $v_{init} =  [%.3f, %.3f, %.3f]^T$'%(v_init[0], v_init[1], v_init[2])+'\nfrom series of rotations on unit sphere\nusing rotation matrices and quaternions'
     axis_ang_title = 'axis angle vector of the rotations\nfrom slerp using rotations matrices and quaternions'
 
-    f, axs = plt.subplots(2,4,figsize=(20,9))
+    f, axs = plt.subplots(3,4,figsize=(20,9))
     plt.subplots_adjust(left=0.03,bottom=0.15,right=0.97,top=0.7,wspace=0.5,hspace=0.4)
     suptitle = f'Comparison of Spherical Linear Interpolation from A to B between using rotation matrices and quaternions to {len(Rs_interp)} points in euler angles and axis-angle representation, '+'where\n' 
     suptitle += r'$A : euler\ angles_{deg} = [%.1f, %.1f, %.1f]^T$'%(euler_angles_deg1[0], euler_angles_deg1[1], euler_angles_deg1[2])+'\n'
@@ -60,6 +60,7 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
     R_path, q_path = deepcopy(v_init), deepcopy(v_init)#np.array([1,0,0])
     R_paths_x, R_paths_y, R_paths_z = [],[],[]#R_path[0]], [R_path[1]], [R_path[2]]
     q_paths_x, q_paths_y, q_paths_z = [],[],[]#[q_path[0]], [q_path[1]], [q_path[2]]
+    qs_w, qs_x, qs_y, qs_z = [], [], [], []
     R_rolls, R_pitchs, R_yaws = [], [], []
     q_rolls, q_pitchs, q_yaws = [], [], []
     R_thetas, R_ks_x, R_ks_y, R_ks_z = [], [], [], []
@@ -91,6 +92,10 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
         R_ks_norm_y.append(k[1]/k_norm)
         R_ks_norm_z.append(k[2]/k_norm)
     for q_interp in qs_interp:
+        qs_w.append(q_interp[0])
+        qs_x.append(q_interp[1])
+        qs_y.append(q_interp[2])
+        qs_z.append(q_interp[3])
         q_interp_R = R_from_q(q_interp)
         q_paths_x.append(q_path[0])
         q_paths_y.append(q_path[1])
@@ -147,7 +152,18 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
     for ax in axs[1, :]:
         ax.remove()
     gs = axs[1, 2].get_gridspec()
-    ax_b_0 = f.add_subplot(gs[1, :2])
+    ax_b = f.add_subplot(gs[1, :4])
+    ax_b.scatter(idxs, qs_w, c='black', marker='o', s=30, alpha=0.5)
+    ax_b.scatter(idxs, qs_x, c='r', marker='o', s=30, alpha=0.5)
+    ax_b.scatter(idxs, qs_y, c='g', marker='o', s=30, alpha=0.5)
+    ax_b.scatter(idxs, qs_z, c='b', marker='o', s=30, alpha=0.5)
+    ax_b.legend(('q_w','q_x','q_y','q_z'))
+    ax_b.set_title(r'quaternion $q = [q_w, q_x, q_y, q_z]^T$')
+    
+    for ax in axs[2, :]:
+        ax.remove()
+    gs = axs[1, 2].get_gridspec()
+    ax_b_0 = f.add_subplot(gs[2, :2])
     ax_b_0.scatter(idxs_paths, R_paths_x, c='r', marker='o', s=30, alpha=0.5)
     ax_b_0.scatter(idxs_paths, R_paths_y, c='b', marker='o', s=30, alpha=0.5)
     ax_b_0.scatter(idxs_paths, R_paths_z, c='g', marker='o', s=30, alpha=0.5)
@@ -155,9 +171,9 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
     ax_b_0.plot(idxs_paths, R_paths_y, c='b', alpha=0.5)
     ax_b_0.plot(idxs_paths, R_paths_z, c='g', alpha=0.5)
     ax_b_0.legend(('R_path_x','R_path_y','R_path_z'))
-    ax_b_0.set_title(path_title)#r'path of vector $v_{init} =  [1,0,0]^T$ from series of rotations on unit sphere using rotation matrices')
+    ax_b_0.set_title(path_title)
     
-    ax_b_1 = f.add_subplot(gs[1, 2:])
+    ax_b_1 = f.add_subplot(gs[2, 2:])
     ax_b_1.scatter(idxs_paths, q_paths_x, c='m', marker='^', s=20, alpha=0.5)
     ax_b_1.scatter(idxs_paths, q_paths_y, c='lime', marker='^', s=20, alpha=0.5)
     ax_b_1.scatter(idxs_paths, q_paths_z, c='c', marker='^', s=20, alpha=0.5)
@@ -166,12 +182,9 @@ def visualize(init_conditions: tuple, Rs_interp: list, qs_interp: list, draw_3d:
     ax_b_1.plot(idxs_paths, q_paths_z, c='g', alpha=0.5)
 
     ax_b_1.legend(('q_path_x','q_path_y','q_path_z'))
-    ax_b_1.set_title(path_title)#r'path of vector $v_{init} =  [1,0,0]^T$ from series of rotations on unit sphere using quaternions')
-
+    ax_b_1.set_title(path_title)
 
     plt.savefig(f'R_q_slerp_comparison_{fig_idx}.png')
-
-
 
     '''
     ax[2].plot(idxs_metrics, geodesic_metrics, c='r')
@@ -254,6 +267,8 @@ def main():
     v_init = np.array([1,1,1])
     v_init = v_init / np.linalg.norm(v_init)
     for (i, (euler_angles_deg1, euler_angles_deg2, n_interp)) in enumerate(zip(euler_angles_deg1_s, euler_angles_deg2_s, n_interps)):
+        print(f'\n\nCase #{i}')
+        print(f'euler_angles_deg1 : {euler_angles_deg1}\neuler_angles_deg2 : {euler_angles_deg2}\nn_interp : {n_interp}\nv_init :\n{v_init}')
         compute_and_visualize(euler_angles_deg1, euler_angles_deg2, n_interp, v_init, draw_3d, i)
     plt.show()
 

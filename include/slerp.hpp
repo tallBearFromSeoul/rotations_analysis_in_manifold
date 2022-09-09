@@ -37,7 +37,20 @@ void slerp_q_direct(const Quat &__q1, const Quat &__q2, int __n_steps, std::vect
 		quaternion_power(q1_inv_q2, lambda, q_p);
 		Qs_interp__.push_back(__q1*q_p);
 	}
+}
 
+void slerp_q_exp_and_log(const Quat &__q1, const Quat &__q2, int __n_steps, std::vector<Quat> &Qs_interp__) {
+	if (Qs_interp__.size())
+		Qs_interp__.clear();
+	Quat q1_inv_q2 = __q1.inverse()*__q2;
+	Vec3f k_log;
+	log_map_from_SU2_to_so3(q1_inv_q2, k_log);
+	for (int i=1; i<__n_steps; i++) {
+		float lambda = 1.0f * static_cast<float>(i) / static_cast<float>(__n_steps-1);
+		Quat q_exp;
+		exp_map_from_so3_to_SU2(lambda*k_log, q_exp);
+		Qs_interp__.push_back(__q1*q_exp);
+	}
 }
 
 #endif

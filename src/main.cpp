@@ -47,13 +47,17 @@ int main(int argc, char *argv[]) {
 	std::cout<<"euler rad 1 :\n"<<euler_angles_rad1<<"\n";
 	q_from_euler_angles_rad(euler_angles_rad1, q1);
 	q_from_euler_angles_rad(euler_angles_rad2, q2);
-	std::vector<Quat> Qs_interp;
+	std::vector<Quat> Qs_interp_direct, Qs_interp_exp_and_log;
 
-	int n_steps = 30;
-	slerp_q_direct(q1, q2, n_steps, Qs_interp);
+	int n_steps = 50;
+	slerp_q_direct(q1, q2, n_steps, Qs_interp_direct);
+	slerp_q_exp_and_log(q1, q2, n_steps, Qs_interp_exp_and_log);
 	std::cout<<"q1 :\n"<<q1<<"\n";
 	std::cout<<"q2 :\n"<<q2<<"\n";
-	print_vector(Qs_interp);
+	// RETURNED ALL TRUE
+	compare_vectors(Qs_interp_direct, Qs_interp_exp_and_log);
+	//print_vector(Qs_interp);
+	
 
 	return 0;
 }
